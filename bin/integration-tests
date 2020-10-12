@@ -1,0 +1,39 @@
+#!/bin/bash
+
+ENDPOINT="127.0.0.1:8888"
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/instance/service-accounts/default/aliases" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/instance/service-accounts/default/email" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/instance/service-accounts/default/identity?audience=https://example.org" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/instance/service-accounts/default/token?scopes=https://www.googleapis.com/auth/cloud-platform" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/instance/id" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/instance/region" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/instance/zone" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/project/numeric-project-id" \
+  -H "Metadata-Flavor: Google"
+echo ""
+
+curl -i "http://${ENDPOINT}/computeMetadata/v1/project/project-id" \
+  -H "Metadata-Flavor: Google"
+echo ""
