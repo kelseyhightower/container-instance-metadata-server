@@ -9,38 +9,34 @@ import (
 )
 
 var (
-	metadataFile       string
-	serviceAccountFile string
-	listenAddress      string
+	metadataFile        string
+	serviceAccountEmail string
+	listenAddress       string
 )
 
 func main() {
 	flag.StringVar(&listenAddress, "listen-address", "127.0.0.1:8888", "The HTTP listen address")
 	flag.StringVar(&metadataFile, "metadata", "metadata.json", "Metadata file path")
-	flag.StringVar(&serviceAccountFile, "service-account", "service-account.json", "Service account file path")
+	flag.StringVar(&serviceAccountEmail, "service-account", "", "The email address of an IAM service account")
 	flag.Parse()
 
 	log.Println("Starting Container Instance Metadata Service ...")
+	log.Printf("Impersonating %s", serviceAccountEmail)
 	log.Printf("Listening on %s", listenAddress)
-
-	sa, err := ServiceAccountFromFile(serviceAccountFile)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	md, err := MetadataFromFile(metadataFile)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	http.Handle("/", &metadataHandler{md, sa})
+	http.Handle("/", &metadataHandler{md, serviceAccountEmail})
 
 	log.Fatal(http.ListenAndServe(listenAddress, nil))
 }
 
 type metadataHandler struct {
 	md *Metadata
-	sa *ServiceAccount
+	sa string
 }
 
 func (h *metadataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -62,11 +58,11 @@ func (h *metadataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	case "/computeMetadata/v1/instance/service-accounts/default/aliases":
 		fmt.Fprintf(w, "default")
 	case "/computeMetadata/v1/instance/service-accounts/default/email":
-		fmt.Fprintf(w, h.sa.ClientEmail)
+		fmt.Fprintf(w, h.sa)
 	case "/computeMetadata/v1/instance/service-accounts/default/token":
 		scopes := strings.Split(r.URL.Query().Get("scopes"), ",")
 
-		token, err := accessToken(h.sa, scopes)
+		token, err := generateAccessToken(h.sa, scopes)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), 500)
@@ -77,7 +73,7 @@ func (h *metadataHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Write(token)
 	case "/computeMetadata/v1/instance/service-accounts/default/identity":
 		audience := r.URL.Query().Get("audience")
-		token, err := idToken(h.sa, audience)
+		token, err := generateIdToken(h.sa, audience)
 		if err != nil {
 			log.Println(err)
 			http.Error(w, err.Error(), 500)
