@@ -9,12 +9,14 @@ import (
 )
 
 var (
+	defaultCredentials  string
 	metadataFile        string
 	serviceAccountEmail string
 	listenAddress       string
 )
 
 func main() {
+	flag.StringVar(&defaultCredentials, "google-application-credentials", "", "Default service account file path")
 	flag.StringVar(&listenAddress, "listen-address", "127.0.0.1:8888", "The HTTP listen address")
 	flag.StringVar(&metadataFile, "metadata", "metadata.json", "Metadata file path")
 	flag.StringVar(&serviceAccountEmail, "service-account", "", "The email address of an IAM service account")

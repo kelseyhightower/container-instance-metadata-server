@@ -56,6 +56,10 @@ func ServiceAccountFromFile(path string) (*ServiceAccount, error) {
 }
 
 func wellKnownFile() string {
+	if defaultCredentials != "" {
+		return defaultCredentials
+	}
+
 	homeDir := os.Getenv("HOME")
 	if homeDir == "" {
 		if u, err := user.Current(); err == nil {

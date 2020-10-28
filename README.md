@@ -29,6 +29,8 @@ container-instance-metadata-server -h
 ```
 ```
 Usage of container-instance-metadata-server:
+  -google-application-credentials string
+        Default service account file path
   -listen-address string
         The HTTP listen address (default "127.0.0.1:8888")
   -metadata string
@@ -195,10 +197,13 @@ Start the `container-instance-metadata-server`:
 
 ```
 sudo container-instance-metadata-server \
+  --google-application-credentials ${HOME}/.config/gcloud/application_default_credentials.json \
   --listen-address "169.254.169.254:80" \
   --metadata metadata.json \
   --service-account "metadata-server@${PROJECT_ID}.iam.gserviceaccount.com"
 ```
+
+> Use the `--google-application-credentials` flag to use the current user's default service account.
 
 ### Test
 
