@@ -24,6 +24,14 @@ gcloud auth application-default login
 
 ## Usage
 
+When running the emulator locally be sure to disable the `gcloud` metadata checks: 
+
+```
+gcloud config set check_gce_metadata False
+```
+
+Start the metadata service:
+
 ```
 container-instance-metadata-server -h
 ```
